@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+    db:
+        image: mysql
+        ports: 
+            - "3305:3306"
+        
+        environment:
+            MYSQL_DATABASE: matriculacionfinal
+            MYSQL_PASSWORD: "123"
+            MYSQL_ROOT_PASSWORD: "123" 
+            MSQL_ALLOW_EMPTY_PASSWORD: "YES"
+            MYQL_RANDOM_ROOT_PASSWORD: "YES"
+
+        volumes:
+            - ./dump:/docker-entrypoint-initdb.d
+            - ./conf:/etc/mysql/conf.d
+            - persistent:/var/lib/mysql
+        networks:
+            - default
+    www:
+        build: .
+        ports: 
+            - "80:80"
+        volumes:
+            - ./www:/var/www/html
+        links:
+            - db
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links: 
+            - db:db
+        ports:
+            - 8000:80
+        environment:
+            MYSQL_USER: root
+            MYSQL_PASSWORD: "123"
+            MYSQL_ROOT_PASSWORD: "123" 
+volumes:
+    persistent:
